@@ -49,7 +49,7 @@
         <group id="CWI.CreateFilesGroup" text="CWI Components" popup="true">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="WeighingNewGroup"/>
             <action id="CWI.CreateStoreAction"
-                    class="com.daniilgrachev.cwi.generators.CreateStoreAction"
+                    class="com.daniilgrachev.cwi.generators.StoreGenerator"
                     text="Mobx Store"
                     icon="icons/myMobx.svg"
             >

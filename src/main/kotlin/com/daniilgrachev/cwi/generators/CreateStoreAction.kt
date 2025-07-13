@@ -5,19 +5,20 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiDirectory
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
 
 class CreateStoreAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val view = e.getData(CommonDataKeys.NAVIGATABLE) ?: return
-        val psiDir = when (view) {
+        val rootDir = when (val view = e.getData(CommonDataKeys.NAVIGATABLE)) {
             is PsiDirectory -> view
+            is PsiFile -> view.parent
             else -> e.getData(CommonDataKeys.VIRTUAL_FILE)?.let {
                 PsiManager.getInstance(project).findDirectory(it)
             }
@@ -40,7 +41,7 @@ class CreateStoreAction : AnAction() {
         if (storeName == null || needExtraFolder == null) return
 
         WriteCommandAction.runWriteCommandAction(project) {
-            generateStoreScaffold(project, psiDir, storeName, needExtraFolder)
+            generateStoreScaffold(project, rootDir, storeName, needExtraFolder)
         }
     }
 
@@ -84,8 +85,9 @@ class CreateStoreAction : AnAction() {
         val indexPsi = storeDir.findFile(indexFileName)
 
         if (indexPsi == null) {
+            val tsFileType = FileTypeManager.getInstance().getFileTypeByExtension("ts")
             val indexPsiNew = PsiFileFactory.getInstance(project)
-                .createFileFromText(indexFileName, "$exportLine\n")
+                .createFileFromText(indexFileName, tsFileType, "$exportLine\n")
 
             storeDir.add(indexPsiNew)
         } else if (!indexPsi.text.contains(exportLine)) {
@@ -99,8 +101,9 @@ class CreateStoreAction : AnAction() {
             val exportFolderLine = "export * from './${capitalized}'"
 
             if (rootIndexPsi == null) {
+                val tsFileType = FileTypeManager.getInstance().getFileTypeByExtension("ts")
                 val indexPsiNew = PsiFileFactory.getInstance(project)
-                    .createFileFromText(indexFileName, "$exportFolderLine\n")
+                    .createFileFromText(indexFileName, tsFileType, "$exportFolderLine\n")
 
                 rootDir.add(indexPsiNew)
             } else if (!rootIndexPsi.text.contains(exportFolderLine)) {
@@ -113,10 +116,5 @@ class CreateStoreAction : AnAction() {
         storeDir.findFile(storeFileName)?.virtualFile?.let {
             FileEditorManager.getInstance(project).openFile(it, true)
         }
-    }
-
-    private class NameValidator : InputValidator {
-        override fun checkInput(inputString: String?): Boolean = !inputString.isNullOrBlank()
-        override fun canClose(inputString: String?): Boolean = checkInput(inputString)
     }
 }
