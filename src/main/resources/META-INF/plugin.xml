@@ -1,0 +1,60 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.daniilgrachev.CWI</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
+    <name>CWI</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor url="https://github.com/gggchaseggg">Daniil Grachev</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
+    <description><![CDATA[
+        <b>Code With Index</b> is a handy tool for quickly generating files and folders in JavaScript/TypeScript projects.<br><br>
+
+        The plugin helps you easily create:
+        <ul>
+          <li><b>MobX stores</b> with ready-to-use templates</li>
+          <li><b>React components</b> (with .tsx and index.ts)</li>
+          <li><b>Stores for other state managers</b> (e.g. Redux, Zustand, etc.)</li>
+          <li><b>Services, utilities, and other structures</b></li>
+        </ul>
+
+        Additional features:
+        <ul>
+          <li>Optional creation of an extra folder with the entity name</li>
+          <li>Automatic generation and updating of <code>index.ts</code> with export statements</li>
+          <li>Newly created files are automatically opened in the editor</li>
+        </ul>
+
+        Speed up and streamline the creation of common project files!<br><br>
+
+        <em>Compatible with all IntelliJ-based IDEs, including WebStorm, IntelliJ IDEA, PhpStorm, and more.</em>
+    ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+
+    </extensions>
+
+    <actions>
+        <group id="CWI.CreateFilesGroup" text="CWI Components" popup="true">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="WeighingNewGroup"/>
+            <action id="CWI.CreateStoreAction"
+                    class="com.daniilgrachev.cwi.generators.CreateStoreAction"
+                    text="Mobx Store"
+                    icon="icons/myMobx.svg"
+            >
+
+            </action>
+        </group>
+    </actions>
+</idea-plugin>
