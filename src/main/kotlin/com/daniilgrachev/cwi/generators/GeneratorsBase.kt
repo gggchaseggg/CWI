@@ -31,11 +31,10 @@ abstract class GeneratorsBase : AnAction() {
         // Шаг 1: показать диалог конкретного генератора
         val params: DialogResult = showDialog(project) ?: return   // пользователь нажал Cancel
 
-        val capitalizedEntityName = capitalize(params.name)
-        val dir = getPlaceDir(rootDir, capitalizedEntityName, params)
-
         // Шаг 2: выполнить генерацию в write‑action
         WriteCommandAction.runWriteCommandAction(project) {
+            val capitalizedEntityName = capitalize(params.name)
+            val dir = getPlaceDir(rootDir, capitalizedEntityName, params)
             runGeneration(project, rootDir, params, capitalizedEntityName, dir)
         }
     }
@@ -125,11 +124,11 @@ abstract class GeneratorsBase : AnAction() {
 
 
         if (params.needExtraFolder) {
-            val parentDir = dir.parent ?: return
+            val parentDir = dir.parentDirectory ?: return
             val parentDirIndexFile = parentDir.findFile(INDEX_NAME)
             val exportFolderLine = getExportLine(name)
 
-            generateIndexFile(project, dir, parentDirIndexFile, exportFolderLine)
+            generateIndexFile(project, parentDir, parentDirIndexFile, exportFolderLine)
         }
     }
 }
