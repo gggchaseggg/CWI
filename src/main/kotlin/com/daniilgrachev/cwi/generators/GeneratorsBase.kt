@@ -12,9 +12,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
 
-abstract class GeneratorsBase : AnAction() {
+abstract class GeneratorsBase(dirSuffix: String = "") : AnAction() {
     val INDEX_NAME = "index.ts"
     val TS_FILE_TYPE = FileTypeManager.getInstance().getFileTypeByExtension("ts")
+    val DIR_SUFFIX = dirSuffix
 
     // -------------- Необходимый метод для AnAction --------------
     override fun actionPerformed(actionEvent: AnActionEvent) {
@@ -80,7 +81,7 @@ abstract class GeneratorsBase : AnAction() {
 
     fun getPlaceDir(rootDir: PsiDirectory, fileName: String, params: DialogResult): PsiDirectory {
         if (params.needExtraFolder) {
-            return rootDir.findSubdirectory(fileName) ?: rootDir.createSubdirectory(fileName)
+            return rootDir.findSubdirectory(fileName) ?: rootDir.createSubdirectory(fileName + DIR_SUFFIX)
         }
 
         return rootDir
@@ -126,7 +127,7 @@ abstract class GeneratorsBase : AnAction() {
         if (params.needExtraFolder) {
             val parentDir = dir.parentDirectory ?: return
             val parentDirIndexFile = parentDir.findFile(INDEX_NAME)
-            val exportFolderLine = getExportLine(name)
+            val exportFolderLine = getExportLine(name + DIR_SUFFIX)
 
             generateIndexFile(project, parentDir, parentDirIndexFile, exportFolderLine)
         }

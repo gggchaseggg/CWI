@@ -4,16 +4,16 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiDirectory
 
-data class StoreDialogResult(
+data class ZustandStoreDialogResult(
     override val name: String,
     override val needExtraFolder: Boolean
 ) : GeneratorsBase.DialogResult
 
-class StoreGenerator : GeneratorsBase() {
+class ZustandStoreGenerator : GeneratorsBase(dirSuffix = "Store") {
     override fun showDialog(project: Project): DialogResult? {
         val value = Messages.showInputDialogWithCheckBox(
             "",
-            "Create Mobx Store",
+            "Create Zustand Store",
             "Create extra folder",
             false,
             true,
@@ -27,7 +27,7 @@ class StoreGenerator : GeneratorsBase() {
 
         if (storeName == null || needExtraFolder == null) return null
 
-        return StoreDialogResult(storeName, needExtraFolder)
+        return ZustandStoreDialogResult(storeName, needExtraFolder)
     }
 
     override fun runGeneration(
@@ -41,15 +41,13 @@ class StoreGenerator : GeneratorsBase() {
         val storeFileName = getFileName(capitalizedEntityName, "store")
         // -------------- Контент стора --------------
         val storeContent = """
-            import { makeAutoObservable } from "mobx"
+            import { create } from 'zustand'
             
-            class ${capitalizedEntityName}Store {
-                constructor() {
-                    makeAutoObservable(this)   
-                }
-            }
-
-            export const ${capitalizedEntityName.replaceFirstChar { it.lowercase() }}Store = new ${capitalizedEntityName}Store()
+            const use${capitalizedEntityName}Store = create((set, get) => ({
+                
+            }))
+            
+            export const useState = use${capitalizedEntityName}Store((state) => state)
         """.trimIndent()
 
         createFileWithContent(project, dir, storeFileName, storeContent)

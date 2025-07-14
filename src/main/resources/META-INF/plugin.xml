@@ -48,13 +48,16 @@
     <actions>
         <group id="CWI.CreateFilesGroup" text="CWI Components" popup="true">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="WeighingNewGroup"/>
-            <action id="CWI.CreateStoreAction"
-                    class="com.daniilgrachev.cwi.generators.StoreGenerator"
+            <action id="CWI.CreateMobxStoreAction"
+                    class="com.daniilgrachev.cwi.generators.MobxStoreGenerator"
                     text="Mobx Store"
                     icon="icons/myMobx.svg"
-            >
-
-            </action>
+            />
+            <action id="CWI.CreateZustandStoreAction"
+                    class="com.daniilgrachev.cwi.generators.ZustandStoreGenerator"
+                    text="Zustand Store"
+                    icon="icons/zustand.svg"
+            />
         </group>
     </actions>
 </idea-plugin>
