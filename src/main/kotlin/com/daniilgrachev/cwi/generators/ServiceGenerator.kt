@@ -4,16 +4,16 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiDirectory
 
-data class MobxStoreDialogResult(
+data class ServiceDialogResult(
     override val name: String,
     override val needExtraFolder: Boolean
 ) : GeneratorsBase.DialogResult
 
-class MobxStoreGenerator : GeneratorsBase(suffix = "Store") {
+class ServiceGenerator : GeneratorsBase(suffix = "Service") {
     override fun showDialog(project: Project): DialogResult? {
         val value = Messages.showInputDialogWithCheckBox(
             "",
-            "Create Mobx Store",
+            "Create Service Class",
             "Create extra folder",
             false,
             true,
@@ -27,7 +27,7 @@ class MobxStoreGenerator : GeneratorsBase(suffix = "Store") {
 
         if (storeName == null || needExtraFolder == null) return null
 
-        return MobxStoreDialogResult(storeName, needExtraFolder)
+        return ServiceDialogResult(storeName, needExtraFolder)
     }
 
     override fun runGeneration(
@@ -37,27 +37,22 @@ class MobxStoreGenerator : GeneratorsBase(suffix = "Store") {
         capitalizedEntityName: String,
         dir: PsiDirectory
     ) {
-        // ---------- Файл стора ----------
-        val storeFileName = getFileName(capitalizedEntityName)
-        // -------------- Контент стора --------------
-        val storeContent = """
-            import { makeAutoObservable } from 'mobx'
-            
-            class ${capitalizedEntityName}Store {
-                constructor() {
-                    makeAutoObservable(this)   
-                }
+        // ---------- Файл ----------
+        val fileName = getFileName(capitalizedEntityName)
+        // -------------- Контент --------------
+        val fileContent = """            
+            export class ${capitalizedEntityName}Service {
+                
             }
 
-            export const ${capitalizedEntityName.replaceFirstChar { it.lowercase() }}Store = new ${capitalizedEntityName}Store()
         """.trimIndent()
 
-        createFileWithContent(project, dir, storeFileName, storeContent)
+        createFileWithContent(project, dir, fileName, fileContent)
 
         // ---------- index.ts: создать или дополнить ----------
         generateIndexFiles(project, capitalizedEntityName, dir, params)
 
-        // ---------- Открываем созданный store в редакторе ----------
-        openFile(project, storeFileName, dir)
+        // ---------- Открываем созданный файл в редакторе ----------
+        openFile(project, fileName, dir)
     }
 }
