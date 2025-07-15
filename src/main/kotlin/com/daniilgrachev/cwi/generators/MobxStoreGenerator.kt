@@ -9,7 +9,7 @@ data class MobxStoreDialogResult(
     override val needExtraFolder: Boolean
 ) : GeneratorsBase.DialogResult
 
-class MobxStoreGenerator : GeneratorsBase(dirSuffix = "Store") {
+class MobxStoreGenerator : GeneratorsBase(suffix = "Store") {
     override fun showDialog(project: Project): DialogResult? {
         val value = Messages.showInputDialogWithCheckBox(
             "",
@@ -38,7 +38,7 @@ class MobxStoreGenerator : GeneratorsBase(dirSuffix = "Store") {
         dir: PsiDirectory
     ) {
         // ---------- Файл стора ----------
-        val storeFileName = getFileName(capitalizedEntityName, "store")
+        val storeFileName = getFileName(capitalizedEntityName)
         // -------------- Контент стора --------------
         val storeContent = """
             import { makeAutoObservable } from 'mobx'
