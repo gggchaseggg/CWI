@@ -9,7 +9,7 @@ data class ServiceDialogResult(
     override val needExtraFolder: Boolean
 ) : GeneratorsBase.DialogResult
 
-class ServiceGenerator: GeneratorsBase(dirSuffix = "Service") {
+class ServiceGenerator : GeneratorsBase(suffix = "Service") {
     override fun showDialog(project: Project): DialogResult? {
         val value = Messages.showInputDialogWithCheckBox(
             "",
@@ -38,7 +38,7 @@ class ServiceGenerator: GeneratorsBase(dirSuffix = "Service") {
         dir: PsiDirectory
     ) {
         // ---------- Файл ----------
-        val fileName = getFileName(capitalizedEntityName, "service")
+        val fileName = getFileName(capitalizedEntityName)
         // -------------- Контент --------------
         val fileContent = """            
             export class ${capitalizedEntityName}Service {

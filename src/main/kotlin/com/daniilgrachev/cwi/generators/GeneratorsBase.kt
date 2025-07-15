@@ -12,10 +12,11 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
 
-abstract class GeneratorsBase(dirSuffix: String = "") : AnAction() {
+abstract class GeneratorsBase(suffix: String = "", fileExtension: String = "ts") : AnAction() {
     val INDEX_NAME = "index.ts"
-    val TS_FILE_TYPE = FileTypeManager.getInstance().getFileTypeByExtension("ts")
-    val DIR_SUFFIX = dirSuffix
+    val FILE_EXTENSION = fileExtension
+    val FILE_TYPE = FileTypeManager.getInstance().getFileTypeByExtension(FILE_EXTENSION)
+    val SUFFIX = suffix
 
     // -------------- Необходимый метод для AnAction --------------
     override fun actionPerformed(actionEvent: AnActionEvent) {
@@ -71,36 +72,46 @@ abstract class GeneratorsBase(dirSuffix: String = "") : AnAction() {
         }
     }
 
-    fun getFileName(fileName: String): String {
-        return "${fileName}.ts"
-    }
+    fun getFileName(fileName: String, customSuffix: String = "", customExtension: String = ""): String {
+        val constructorSuffix = SUFFIX.lowercase()
+        val suffix =
+            if (customSuffix != "") ".${customSuffix}"
+            else if (constructorSuffix != "") ".${constructorSuffix}"
+            else ""
 
-    fun getFileName(fileName: String, suffix: String): String {
-        return "${fileName}.${suffix}.ts"
+        val extension =
+            if (customExtension != "") customExtension
+            else FILE_EXTENSION
+
+        return "${fileName}${suffix}.${extension}"
+
     }
 
     fun getPlaceDir(rootDir: PsiDirectory, fileName: String, params: DialogResult): PsiDirectory {
         if (params.needExtraFolder) {
-            return rootDir.findSubdirectory(fileName) ?: rootDir.createSubdirectory(fileName + DIR_SUFFIX)
+            return rootDir.findSubdirectory(fileName) ?: rootDir.createSubdirectory(fileName + SUFFIX)
         }
 
         return rootDir
     }
 
     fun createFileWithContent(project: Project, dir: PsiDirectory, fileName: String, fileContent: String) {
+        //TODO: generate index file with "ts" type
         val file = PsiFileFactory.getInstance(project)
-            .createFileFromText(fileName, TS_FILE_TYPE, fileContent)
+            .createFileFromText(fileName, FILE_TYPE, fileContent)
 
         dir.add(file)
     }
 
-    fun getExportLine(from: String): String {
-        return "export * from './${from}'"
+    fun getExportLine(name: String, isDefault: Boolean = false): String {
+        val suffix = SUFFIX.lowercase()
+        val fromEnd = "from './${name}${if (suffix == "") "" else ".${suffix}"}'"
+
+        if (isDefault) return "export { default as ${name} } from './${name}'"
+
+        return "export * ${fromEnd}"
     }
 
-    fun getExportLine(from: String, suffix: String): String {
-        return "export * from './${from}.${suffix}'"
-    }
 
     fun updateIndexFile(file: PsiFile, additionalText: String) {
         val newText = file.text + additionalText
@@ -117,9 +128,16 @@ abstract class GeneratorsBase(dirSuffix: String = "") : AnAction() {
         }
     }
 
-    fun generateIndexFiles(project: Project, name: String, dir: PsiDirectory, params: DialogResult) {
+    fun generateIndexFiles(
+        project: Project,
+        name: String,
+        dir: PsiDirectory,
+        params: DialogResult,
+        isDefault: Boolean = false
+    ) {
+
         val indexFile = dir.findFile(INDEX_NAME)
-        val exportLine = getExportLine(name, "store")
+        val exportLine = getExportLine(name, isDefault)
 
         generateIndexFile(project, dir, indexFile, exportLine)
 
@@ -127,7 +145,7 @@ abstract class GeneratorsBase(dirSuffix: String = "") : AnAction() {
         if (params.needExtraFolder) {
             val parentDir = dir.parentDirectory ?: return
             val parentDirIndexFile = parentDir.findFile(INDEX_NAME)
-            val exportFolderLine = getExportLine(name + DIR_SUFFIX)
+            val exportFolderLine = getExportLine(name + SUFFIX)
 
             generateIndexFile(project, parentDir, parentDirIndexFile, exportFolderLine)
         }

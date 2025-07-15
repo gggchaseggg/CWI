@@ -9,7 +9,7 @@ data class ZustandStoreDialogResult(
     override val needExtraFolder: Boolean
 ) : GeneratorsBase.DialogResult
 
-class ZustandStoreGenerator : GeneratorsBase(dirSuffix = "Store") {
+class ZustandStoreGenerator : GeneratorsBase(suffix = "Store") {
     override fun showDialog(project: Project): DialogResult? {
         val value = Messages.showInputDialogWithCheckBox(
             "",
@@ -38,7 +38,7 @@ class ZustandStoreGenerator : GeneratorsBase(dirSuffix = "Store") {
         dir: PsiDirectory
     ) {
         // ---------- Файл стора ----------
-        val storeFileName = getFileName(capitalizedEntityName, "store")
+        val storeFileName = getFileName(capitalizedEntityName)
         // -------------- Контент стора --------------
         val storeContent = """
             import { create } from 'zustand'
