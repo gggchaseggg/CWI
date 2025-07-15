@@ -58,6 +58,11 @@
                     text="Zustand Store"
                     icon="icons/zustand.svg"
             />
+            <action id="CWI.CreateServiceAction"
+                    class="com.daniilgrachev.cwi.generators.ServiceGenerator"
+                    text="Service Class"
+                    icon="icons/service.svg"
+            />
         </group>
     </actions>
 </idea-plugin>
